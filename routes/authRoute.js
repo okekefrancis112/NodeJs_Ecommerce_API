@@ -6,14 +6,16 @@ const {
     loginUserCtrl,
     getallUsers,
     getUser,
-    deleteUser
+    deleteUser,
+    updatedUser
 } = require("../controller/userCtrl");
+const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 
 router.post('/register', createUser);
 router.post('/login', loginUserCtrl);
 router.get('/all-users', getallUsers);
-router.get('/:id', getUser);
+router.get('/:id', authMiddleware, isAdmin, getUser);
 router.delete('/:id', deleteUser);
-router.put('/:id', updatedUser);
+router.put('/edit-user', authMiddleware, updatedUser);
 
 module.exports = router;
