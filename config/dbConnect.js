@@ -4,7 +4,7 @@ mongoose.set("strictQuery", false);
 
 const dbConnect = () => {
     try {
-        const conn = mongoose.connect('mongodb://localhost:27017/digitic');
+        const conn = mongoose.connect(process.env.MONGODB_URL);
         console.log('Database connection established');
     } catch (err) {
         console.log("Database connection error");
