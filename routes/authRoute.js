@@ -5,12 +5,14 @@ const {
     createUser,
     loginUserCtrl,
     getallUsers,
-    getUser
+    getUser,
+    deleteUser
 } = require("../controller/userCtrl");
 
 router.post('/register', createUser);
 router.post('/login', loginUserCtrl);
 router.get('/all-users', getallUsers);
 router.get('/:id', getUser);
+router.delete('/:id', deleteUser);
 
 module.exports = router;
