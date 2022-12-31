@@ -312,6 +312,20 @@ const resetPassword = asyncHandler(async (req, res) => {
     res.json(user);
 });
 
+
+// Get wishlist
+const getWishList = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    validateMongoDbId(_id);
+    try {
+        const findUser = await User.findById(_id).populate('wishlist');
+        res.json(findUser);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
 module.exports = {
     createUser,
     loginUserCtrl,
@@ -326,5 +340,6 @@ module.exports = {
     updatePassword,
     forgotPasswordToken,
     resetPassword,
-    loginAdmin
+    loginAdmin,
+    getWishList,
 };
