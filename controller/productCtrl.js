@@ -190,8 +190,8 @@ const rating = asyncHandler(async (req, res) => {
                     new: true,
                 }
             );
-            console.log(updateRating);
-            res.json(updateRating);
+            // console.log(updateRating);
+            // res.json(updateRating);
         } else {
             const rateProduct = await Product.findByIdAndUpdate(
                 prodId,
@@ -207,16 +207,28 @@ const rating = asyncHandler(async (req, res) => {
                     new: true,
                 }
             );
-            console.log(rateProduct);
-            res.json(rateProduct);
+            // console.log(rateProduct);
+            // res.json(rateProduct);
         }
+        const getAllRatings = await Product.findById(prodId);
+        let totalRating = getAllRatings.ratings.length;
+        let ratingsum = getAllRatings.ratings
+            .map((item) => item.star )
+            .reduce((prev, curr) => prev + curr, 0);
+        let actualRating = Math.round(ratingsum / totalRating);
+        let finalproduct = await Product.findByIdAndUpdate(
+            prodId,
+            {
+                totalrating: actualRating,
+            },
+            { new: true }
+        );
+        console.log(finalproduct);
+        res.json(finalproduct);
     } catch (error) {
         throw new Error(error);
     }
 });
-
-
-// Get all ratings
 
 
 
