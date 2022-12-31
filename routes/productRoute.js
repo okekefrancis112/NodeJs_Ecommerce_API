@@ -8,10 +8,12 @@ const {
      getAllProducts,
      updateProduct,
      deleteProduct,
+     addToWishlist,
      } = require("../controller/productCtrl");
 
 
 router.post('/', authMiddleware, isAdmin, createProduct);
+router.put('/:id', authMiddleware, addToWishlist);
 router.get('/:id', getProduct);
 router.put('/:id', authMiddleware, isAdmin, updateProduct);
 router.delete('/:id', authMiddleware, isAdmin, deleteProduct);

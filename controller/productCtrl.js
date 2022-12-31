@@ -2,6 +2,7 @@ const Product = require("../models/productModel");
 const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const validateMongoDbId = require('../utils/validateMongodbid');
+const User = require('../models/userModel');
 
 
 
@@ -38,6 +39,7 @@ const updateProduct = asyncHandler(async (req, res) => {
                 price: req?.body?.price,
                 quantity: req?.body?.quantity,
                 color: req?.body?.color,
+                wishlist: req?.body?.wishlist,
         },
         {
             new: true,
@@ -124,6 +126,46 @@ const getAllProducts = asyncHandler(async (req, res) => {
 });
 
 
+// Add to wishlist
+const addToWishlist = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    const { prodId } = req.body;
+    console.log("added>>>>>>>>>>>>>>>>.", _id );
+    try{
+        const user = await User.findById(_id);
+        const alreadyAdded = user.wishlist.find((id) => id.toString() === prodId);
+        console.log("added>>>>>>>>>>>>>>>>.", alreadyAdded);
+        if (alreadyAdded) {
+            let user = await User.findByIdAndUpdate(
+                _id,
+                {
+                    $pull: { wishlist: prodId },
+                },
+                {
+                    new: true,
+                }
+            );
+            console.log(user);
+            res.json(user);
+        } else {
+            let user = await User.findByIdAndUpdate(
+                _id,
+                {
+                    $push: { wishlist: prodId },
+                },
+                {
+                    new: true,
+                }
+            );
+            console.log(user);
+            res.json(user);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
 
 
 
@@ -134,4 +176,5 @@ module.exports = {
     getAllProducts,
     updateProduct,
     deleteProduct,
+    addToWishlist,
 };
