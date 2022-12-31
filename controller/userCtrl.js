@@ -4,7 +4,6 @@ const { generateToken } = require('../config/jwtToken');
 const validateMongoDbId = require('../utils/validateMongodbid');
 const { generateRefreshToken } = require('../config/refreshtoken');
 const jwt = require('jsonwebtoken');
-const { response } = require('express');
 
 // Register a User
 const createUser = asyncHandler(async(req, res) => {

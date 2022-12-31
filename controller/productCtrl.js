@@ -18,6 +18,34 @@ const createProduct = asyncHandler(async (req, res) => {
 });
 
 
+// Update a product
+const updateProduct = asyncHandler(async (req, res) => {
+    const _id = String(req.params.id);
+    try {
+        if (req.body.title) {
+            req.body.slug = slugify(req.body.title);
+        }
+        const update = await Product.findByIdAndUpdate(
+            _id,
+             {
+                title: req?.body?.title,
+                slug: req?.body?.slug,
+                category: req?.body?.category,
+                brand: req?.body?.brand,
+                description: req?.body?.description,
+                price: req?.body?.price,
+                quantity: req?.body?.quantity,
+                color: req?.body?.color,
+        },
+        {
+            new: true,
+        });
+        res.json(update);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
 
 // Get Product
 const getProduct = asyncHandler(async (req, res) => {
@@ -46,4 +74,4 @@ const getAllProducts = asyncHandler(async (req, res) => {
 
 
 
-module.exports = { createProduct, getProduct, getAllProducts };
+module.exports = { createProduct, getProduct, getAllProducts, updateProduct };

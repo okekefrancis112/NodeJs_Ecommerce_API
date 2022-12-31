@@ -5,11 +5,13 @@ const {
      createProduct,
      getProduct,
      getAllProducts,
+     updateProduct,
      } = require("../controller/productCtrl");
 
 
 router.post('/', createProduct);
 router.get('/:id', getProduct);
-router.get('/', getAllProducts);
+router.put('/:id', updateProduct);
+router.get('/', getAllProducts );
 
 module.exports = router;
