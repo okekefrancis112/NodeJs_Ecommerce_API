@@ -32,8 +32,8 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
     // Check if user exists or not
 
     const findUser = await User.findOne({ email });
-    const user = (await findUser.isPasswordMatched(password))
-    if (findUser && user) {
+    // const user = (await findUser.isPasswordMatched(password))
+    if (findUser && await findUser.isPasswordMatched(password)) {
         const refreshToken = await generateRefreshToken(findUser?._id);
         const updateuser = await User.findByIdAndUpdate(
             findUser.id,
@@ -53,6 +53,45 @@ const loginUserCtrl = asyncHandler(async (req, res) => {
             email: findUser?.email,
             mobile: findUser?.mobile,
             token: generateToken(findUser?._id),
+        });
+    } else {
+        throw new Error ("Invalid Credentials.");
+    }
+
+});
+
+
+// Admin Login
+// Login User
+const loginAdmin = asyncHandler(async (req, res) => {
+    const { email, password } = req.body;
+    // Check if user exists or not
+
+    const findAdmin = await User.findOne({ email });
+
+    if (findAdmin.role !== 'admin') throw new Error("Not Authorised.");
+
+    // const admin = (await findAdmin.isPasswordMatched(password))
+    if (findAdmin && await findAdmin.isPasswordMatched(password)) {
+        const refreshToken = await generateRefreshToken(findAdmin?._id);
+        const updateuser = await User.findByIdAndUpdate(
+            findAdmin.id,
+            {
+            refreshToken: refreshToken,
+        },
+        { new: true }
+        );
+        res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            maxAge: 72 * 60 * 60 * 1000,
+        });
+        res.json({
+            _id: findAdmin?._id,
+            firstname: findAdmin?.firstname,
+            lastname: findAdmin?.lastname,
+            email: findAdmin?.email,
+            mobile: findAdmin?.mobile,
+            token: generateToken(findAdmin?._id),
         });
     } else {
         throw new Error ("Invalid Credentials.");
@@ -286,5 +325,6 @@ module.exports = {
     logoutUser,
     updatePassword,
     forgotPasswordToken,
-    resetPassword
+    resetPassword,
+    loginAdmin
 };
