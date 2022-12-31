@@ -4,6 +4,8 @@ const { generateToken } = require('../config/jwtToken');
 const validateMongoDbId = require('../utils/validateMongodbid');
 const { generateRefreshToken } = require('../config/refreshtoken');
 const jwt = require('jsonwebtoken');
+// const sendEmail = require('./emailCtrl');
+// const crypto = require('crypto');
 
 // Register a User
 const createUser = asyncHandler(async(req, res) => {
@@ -207,6 +209,22 @@ const unblockUser = asyncHandler(async (req, res) => {
     }
 });
 
+
+// Update a user password
+const updatePassword = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    const {password} = req.body;
+    validateMongoDbId(_id);
+    const user = await User.findById(_id);
+    if (password){
+        user.password = password;
+        const updatedPassword = await user.save();
+        res.json(updatedPassword);
+    } else {
+        res.json(user);
+    }
+});
+
 module.exports = {
     createUser,
     loginUserCtrl,
@@ -218,4 +236,5 @@ module.exports = {
     unblockUser,
     handleRefreshToken,
     logoutUser,
+    updatePassword
 };
