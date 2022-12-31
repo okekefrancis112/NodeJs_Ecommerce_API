@@ -29,14 +29,33 @@ const getAllCoupons = asyncHandler(async (req, res) => {
 
 //  Update Coupon
 const updateCoupons = asyncHandler(async (req, res) => {
-    const id = req.params.id;
+    const {id} = req.params;
     validateMongoDbId(id);
+    console.log(id);
     try {
-        const updatedCoupon = await Coupon.findByIdAndUpdate(id);
+        const updatedCoupon = await Coupon.findByIdAndUpdate(id, req.body,
+            {
+                new: true,
+            }
+            );
+        console.log(updatedCoupon.name);
         res.json(updatedCoupon);
     } catch (err) {
         throw new Error(err);
     }
 });
 
-module.exports = { createCoupon, getAllCoupons, updateCoupons };
+
+//  Deme Coupon
+const deleteCoupons = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    validateMongoDbId(id);
+    try {
+        const deletedCoupon = await Coupon.findByIdAndDelete(id);
+        res.json(deletedCoupon);
+    } catch (err) {
+        throw new Error(err);
+    }
+});
+
+module.exports = { createCoupon, getAllCoupons, updateCoupons, deleteCoupons };
