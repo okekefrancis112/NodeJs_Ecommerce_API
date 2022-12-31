@@ -79,15 +79,22 @@ const getAllProducts = asyncHandler(async (req, res) => {
         const queryObj = { ...req.query };
         const excludeFields = ["page", "sort", "limit", "fields"];
         excludeFields.forEach((el) => delete queryObj[el]);
-        // console.log(queryObj);
-
         let queryStr = JSON.stringify(queryObj);
         queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-        // console.log(queryStr);
+        let query = Product.find(JSON.parse(queryStr));
 
-        const query = Product.find(JSON.parse(queryStr));
+        // Sorting products
+
+        if (req.query.sort) {
+            const sortBy = req.query.sort.split(",").split(" ");
+            query = query.sort(sortBy);
+        } else {
+            query = query.sort("-createdAt");
+        }
+
+        //  Limiting product fields
+
         const product = await query;
-        // const getallProducts = await Product.find(req.query);
         res.json(product);
     } catch (error) {
         throw new Error(error);
