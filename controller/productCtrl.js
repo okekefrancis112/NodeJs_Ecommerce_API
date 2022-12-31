@@ -130,11 +130,11 @@ const getAllProducts = asyncHandler(async (req, res) => {
 const addToWishlist = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { prodId } = req.body;
-    console.log("added>>>>>>>>>>>>>>>>.", _id );
+    // console.log("added>>>>>>>>>>>>>>>>.", _id );
     try{
         const user = await User.findById(_id);
         const alreadyAdded = user.wishlist.find((id) => id.toString() === prodId);
-        console.log("added>>>>>>>>>>>>>>>>.", alreadyAdded);
+        // console.log("added>>>>>>>>>>>>>>>>.", alreadyAdded);
         if (alreadyAdded) {
             let user = await User.findByIdAndUpdate(
                 _id,
@@ -166,6 +166,57 @@ const addToWishlist = asyncHandler(async (req, res) => {
 });
 
 
+// Create and Update Rating
+const rating = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    // console.log("_id>>>>>>>>>>>>>>>>>>>>.: " + _id);
+    const {star, prodId } = req.body;
+    try {
+        const product = await Product.findById(prodId);
+        // console.log("product>>>>>>>>>>>>>>>>>>>>.: " +  product.ratings);
+        let alreadyRated = product.ratings.find(
+            (userId) => userId.postedBy.toString() === _id.toString()
+        );
+        // console.log("alreadyRated>>>>>>>>>>>>>>>>>>>>.: " + alreadyRated);
+        if (alreadyRated) {
+            const updateRating = await Product.updateOne(
+                {
+                    ratings: { $elemMatch: alreadyRated },
+                },
+                {
+                    $set: { "ratings.$.star": star },
+                },
+                {
+                    new: true,
+                }
+            );
+            console.log(updateRating);
+            res.json(updateRating);
+        } else {
+            const rateProduct = await Product.findByIdAndUpdate(
+                prodId,
+                {
+                    $push: {
+                        ratings: {
+                            star: star,
+                            postedBy: _id,
+                        },
+                    },
+                },
+                {
+                    new: true,
+                }
+            );
+            console.log(rateProduct);
+            res.json(rateProduct);
+        }
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
+// Get all ratings
 
 
 
@@ -177,4 +228,5 @@ module.exports = {
     updateProduct,
     deleteProduct,
     addToWishlist,
+    rating,
 };
