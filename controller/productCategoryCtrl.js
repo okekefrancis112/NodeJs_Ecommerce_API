@@ -43,4 +43,34 @@ const deleteCategory = asyncHandler(async (req, res) => {
 });
 
 
-module.exports = { createCategory, updateCategory, deleteCategory };
+// Get Product Category
+const getCategory = asyncHandler(async (req, res) => {
+    const id = req.params.id;
+    validateMongoDbId(id);
+    try {
+        const get_a_Category = await Category.findById(id);
+        res.json(get_a_Category);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
+// Get All Product Category
+const getAllCategory = asyncHandler(async (req, res) => {
+    try {
+        const get_all_Category = await Category.find();
+        res.json(get_all_Category);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
+
+module.exports = {
+    createCategory,
+    updateCategory,
+    deleteCategory,
+    getCategory,
+    getAllCategory
+};
