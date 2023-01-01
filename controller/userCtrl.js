@@ -12,6 +12,7 @@ const jwt = require('jsonwebtoken');
 const sendEmail = require('./emailCtrl');
 const crypto = require('crypto');
 const uniqid = require('uniqid');
+const { response } = require('express');
 
 
 // Register a User
@@ -514,6 +515,29 @@ const getOrders = asyncHandler(async (req, res) => {
 });
 
 
+
+// Update Order
+const updateOrderStatus = asyncHandler( async (req, res) => {
+    const { status } = req.body;
+    const { id } = req.params;
+    validateMongoDbId(id);
+    try{
+        const updateOrder = await Order.findByIdAndUpdate(
+            id,
+            {
+                orderStatus: status,
+                paymentIntent: {
+                    status: status,
+                },
+            },
+            { new: true }
+        );
+        res.json(updateOrder);
+    }catch(err){
+        throw new Error(error)
+    }
+});
+
 module.exports = {
     createUser,
     loginUserCtrl,
@@ -537,4 +561,5 @@ module.exports = {
     applyCoupon,
     createOrder,
     getOrders,
+    updateOrderStatus,
 };
