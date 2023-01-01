@@ -22,7 +22,8 @@ const {
     getUserCart,
     emptyCart,
     applyCoupon,
-    createOrder
+    createOrder,
+    getOrders
 } = require("../controller/userCtrl");
 const { authMiddleware, isAdmin } = require("../middlewares/authMiddleware");
 
@@ -39,6 +40,7 @@ router.post('/cart/applycoupon', authMiddleware, applyCoupon);
 router.post('/admin-login', loginAdmin);
 
 router.get('/all-users', getallUsers);
+router.get('/get-orders', authMiddleware, getOrders);
 router.get('/refresh', handleRefreshToken);
 router.get('/logout', logoutUser);
 router.get('/wishlist', authMiddleware, getWishList);

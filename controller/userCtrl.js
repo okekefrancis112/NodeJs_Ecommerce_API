@@ -464,9 +464,9 @@ const createOrder =asyncHandler(async(req, res) => {
         let userCart = await Cart.findOne({ orderby: user._id });
         let finalAmount = 0;
         if ( couponApplied && userCart.totalAfterDiscount ) {
-            finalAmount = userCart.totalAfterDiscount * 100;
+            finalAmount = userCart.totalAfterDiscount;
         } else {
-            finalAmount = userCart.cartTotal * 100;
+            finalAmount = userCart.cartTotal;
         }
 
         let newOrder = await new Order({
@@ -496,7 +496,22 @@ const createOrder =asyncHandler(async(req, res) => {
     } catch (error) {
         throw new Error(error);
     }
-})
+});
+
+
+// Get Orders
+const getOrders = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    validateMongoDbId(_id);
+    try {
+        const userOrders = await Order.findOne({ orderby: _id })
+            .populate("products.product")
+            .exec();
+        res.json(userOrders);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
 
 
 module.exports = {
@@ -520,5 +535,6 @@ module.exports = {
     getUserCart,
     emptyCart,
     applyCoupon,
-    createOrder
+    createOrder,
+    getOrders,
 };
