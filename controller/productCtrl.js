@@ -3,6 +3,7 @@ const asyncHandler = require("express-async-handler");
 const slugify = require("slugify");
 const validateMongoDbId = require('../utils/validateMongodbid');
 const User = require('../models/userModel');
+const cloudinaryUploadImg = require("../utils/cloudinary")
 
 
 
@@ -130,6 +131,7 @@ const getAllProducts = asyncHandler(async (req, res) => {
 const addToWishlist = asyncHandler(async (req, res) => {
     const { _id } = req.user;
     const { prodId } = req.body;
+    validateMongoDbId(_id);
     // console.log("added>>>>>>>>>>>>>>>>.", _id );
     try{
         const user = await User.findById(_id);
@@ -169,6 +171,7 @@ const addToWishlist = asyncHandler(async (req, res) => {
 // Create and Update Rating
 const rating = asyncHandler(async (req, res) => {
     const { _id } = req.user;
+    validateMongoDbId(_id);
     // console.log("_id>>>>>>>>>>>>>>>>>>>>.: " + _id);
     const {star, prodId, comment } = req.body;
     try {
@@ -232,6 +235,39 @@ const rating = asyncHandler(async (req, res) => {
 });
 
 
+// Upload Images
+const uploadImages = asyncHandler(async (req, res) => {
+    // console.log(req.files);
+    const { id } = req.params;
+    validateMongoDbId(id);
+    try {
+        const uploader = ( path ) => cloudinaryUploadImg(path, "images");
+        const urls = [];
+        const files = req.files;
+        for (const file of files) {
+            const { path } = file;
+            console.log(path);
+            const newpath = await uploader(path);
+            console.log(newpath);
+            urls.push(newpath);
+        }
+        const findProduct = await Product.findByIdAndUpdate(
+            id,
+            {
+                images: urls.map((file) => {
+                    return file;
+                }),
+            },
+            {
+                new: true,
+            }
+        );
+        res.json(findProduct);
+    } catch (error) {
+        throw new Error(error);
+    }
+});
+
 
 
 module.exports = {
@@ -242,4 +278,5 @@ module.exports = {
     deleteProduct,
     addToWishlist,
     rating,
+    uploadImages,
 };

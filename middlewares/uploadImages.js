@@ -15,8 +15,8 @@ const multerStorage = multer.diskStorage({
 
 
 const multerFilter = (req, file, cb) => {
-    if (file.mimetype.startswith("image")) {
-        cb(null, true)
+    if (file.mimetype.startsWith("image")) {
+        cb(null, true);
     }
     else {
         cb ({
@@ -35,7 +35,7 @@ const uploadPhoto = multer({
 })
 
 
-const productImgSize = async (req, res, next) => {
+const productImgResize = async (req, res, next) => {
     if (!req.files) return next();
     await Promise.all(req.files.map(async (file) => {
         await sharp(file.path).resize(300, 300).toFormat('jpeg').jpeg({ quality: 90 })
@@ -46,4 +46,4 @@ const productImgSize = async (req, res, next) => {
 
 
 
-module.exports = { uploadPhoto, productImgSize };
+module.exports = { uploadPhoto, productImgResize };
