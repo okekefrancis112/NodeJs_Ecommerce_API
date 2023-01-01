@@ -124,6 +124,28 @@ const updatedUser =  asyncHandler (async (req, res) => {
 });
 
 
+// Save User Address
+const saveAddress = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    validateMongoDbId(_id);
+
+    try {
+        const updatedUser = await User.findByIdAndUpdate(
+            _id,
+             {
+                address: req?.body?.address,
+            },
+        {
+            new: true,
+        }
+        );
+        res.json(updatedUser);
+    } catch (error) {
+        throw new Error (error);
+    }
+});
+
+
 // Get all users
 const getallUsers = asyncHandler (async (req, res) => {
     try {
@@ -342,4 +364,5 @@ module.exports = {
     resetPassword,
     loginAdmin,
     getWishList,
+    saveAddress,
 };
